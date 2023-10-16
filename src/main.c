@@ -53,27 +53,13 @@ static int dsh_execute(char *argv[]) {
  }
 }
 
-/* Sees if argv[0] is a built in command */
-static int dsh_built_in(char *argv[]) {
- for (size_t i = 0; command_map[i].command; i++) {
-	if (!strcmp(argv[0], command_map[i].command))
-	 return command_map[i].function(argv);
- }
- return -1;
-}
-
 /* TODO handle pipes */
 static int dsh_line_parser(char *argv[]) {
- int ret = 0;
-
- /*if ((ret = dsh_built_in(argv)) != -1)
-	return ret;*/
-
  if (!strcmp(argv[0], "cd"))
-	dsh_cd(argv);
+	return dsh_cd(argv);
 
  else if (!strcmp(argv[0], "exit"))
-	dsh_exit(argv);
+	return dsh_exit(argv);
 
  return dsh_execute(argv);
 }
@@ -102,7 +88,6 @@ static int dsh_event_loop(void) {
 /* TODO make this run shell files */
 static int dsh_parse_args(const char **argv) {
  if (!argv) return 1;
-
  return 0;
 }
 
