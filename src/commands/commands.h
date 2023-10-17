@@ -4,10 +4,10 @@
 int return_value = 0;
 
 /* Implementation of the cd command */
-unsigned int dsh_cd(char *argv[]);
+unsigned int cmd_cd(char *argv[]);
 
 /* A command to exit the shell */
-unsigned int dsh_exit(char *argv[]);
+unsigned int cmd_exit(char *argv[]);
 
 struct COMMAND_MAP {
  const char *command;
@@ -15,8 +15,8 @@ struct COMMAND_MAP {
 };
 
 struct COMMAND_MAP command_map[] = {
- { "cd", dsh_cd },
- { "exit", dsh_exit },
+ { "cd", cmd_cd },
+ { "exit", cmd_exit },
 };
 
 #include "exit.c"

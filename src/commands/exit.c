@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-unsigned int dsh_exit(char *argv[]) {
+unsigned int cmd_exit(char *argv[]) {
  int ret = 0;
 
  if (!argv[1])

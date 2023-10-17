@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-unsigned int dsh_cd(char *argv[]) {
+unsigned int cmd_cd(char *argv[]) {
  const char *home;
 
  if (!argv[1]) {
