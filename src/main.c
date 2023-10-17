@@ -56,11 +56,13 @@ static int dsh_execute(char *argv[]) {
 
 /* TODO handle pipes */
 static int dsh_line_parser(char *argv[]) {
- if (!strcmp(argv[0], "cd"))
+ if (!strcmp(argv[0], "cd")) {
 	return dsh_cd(argv);
+ }
 
- else if (!strcmp(argv[0], "exit"))
+ else if (!strcmp(argv[0], "exit")) {
 	return dsh_exit(argv);
+ }
 
  return dsh_execute(argv);
 }
@@ -80,11 +82,11 @@ static int dsh_read_line(char *buf, size_t len) {
 	if (i > len)
 	 break;
 
-	if (c == '\n' || c == '\r') {
+	else if (c == '\n' || c == '\r') {
 	 return 0;
 	}
 
-	*buf++ = c;
+	else *buf++ = c;
  }
 
  return 1;
@@ -93,8 +95,6 @@ static int dsh_read_line(char *buf, size_t len) {
 /* The main loop of the shell */
 static int dsh_event_loop(void) {
  char buf[256], *argv[256];
-
- dsh_change_shell();
 
  for (;;) {
 	dsh_config_print_prompt();
@@ -122,6 +122,12 @@ static int dsh_event_loop(void) {
  return 0;
 }
 
+static int dsh_setup(void) {
+ dsh_change_shell();
+ dsh_event_loop();
+ return 0;
+}
+
 /* TODO make this run shell files */
 static int dsh_parse_args(const char **argv) {
  if (!argv) return 1;
@@ -129,5 +135,5 @@ static int dsh_parse_args(const char **argv) {
 }
 
 int main(int argc, const char **argv) {
- return (argc < 2) ? dsh_event_loop() : dsh_parse_args(argv);
+ return (argc < 2) ? dsh_setup() : dsh_parse_args(argv);
 }
