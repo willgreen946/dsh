@@ -4,6 +4,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -64,24 +65,60 @@ static int dsh_line_parser(char *argv[]) {
  return dsh_execute(argv);
 }
 
+/* Sets the SHELL enviroment variable */
+static void dsh_change_shell(void) {
+ if (setenv("SHELL", "dsh", 1) == -1)
+	fprintf(stderr, "%s\n", strerror(errno));
+}
+
+static int dsh_read_line(char *buf, size_t len) {
+ char c;
+
+ memset(buf, 0, strlen(buf));
+
+ for (size_t i = 0; read(STDIN_FILENO, &c, 1); i++) {
+	if (i > len)
+	 break;
+
+	if (c == '\n' || c == '\r') {
+	 return 0;
+	}
+
+	*buf++ = c;
+ }
+
+ return 1;
+}
+
 /* The main loop of the shell */
 static int dsh_event_loop(void) {
  char buf[256], *argv[256];
 
+ dsh_change_shell();
+
  for (;;) {
 	dsh_config_print_prompt();
 
-	if (!fgets(buf, 255, stdin))
-	 fprintf(stderr, "%s\n", strerror(errno));
+	if (dsh_read_line(buf, 255) != 0)
+	 fprintf(stderr, "ERROR: taking input\n");
 
 	else {
 	 dsh_rm_newline(buf);
 	 dsh_line_splitter(argv, buf, 255);
 
-	 if (argv[0])
+	 if (argv[0]) {
 		return_value = dsh_line_parser(argv);
+	 }
+
+		/* Reset argv */
+		for (size_t i = 0; argv[i]; i++) {
+		 memset(argv[i], 0, strlen(argv[i]));
+		}
+
+		fflush(stdout);
 	}
  }
+
  return 0;
 }
 
