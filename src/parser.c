@@ -40,6 +40,8 @@ int parser_read_line(char *buf, size_t len) {
     else
       *buf++ = c;
   }
+
+  return 1;
 }
 
 int parser_line_parser(char *argv[]) {

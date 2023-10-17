@@ -18,7 +18,7 @@ static int dsh_event_loop(void) {
   for (;;) {
     config_print_prompt();
 
-    if (!parser_read_line(buf, 255))
+    if (parser_read_line(buf, 255))
       fprintf(stderr, "ERROR: taking input\n");
 
     else {
