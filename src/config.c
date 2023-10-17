@@ -6,7 +6,7 @@
 
 #include "config.h"
 
-void dsh_config_print_prompt(void) {
+void config_print_prompt(void) {
   char working_directory[256];
 
   if (!(getcwd(working_directory, 255))) {

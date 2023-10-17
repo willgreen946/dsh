@@ -1,7 +1,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-void dsh_config_print_prompt(void);
+/* Prints the shell prompt to stdout */
+void config_print_prompt(void);
 
 #include "config.c"
 
