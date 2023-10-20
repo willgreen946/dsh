@@ -10,7 +10,7 @@ unsigned int cmd_cd(char *argv[]);
 unsigned int cmd_exit(char *argv[]);
 
 struct COMMAND_MAP {
- const char *command;
+ const char *str;
  unsigned int(*function)(char *argv[]);
 };
 
