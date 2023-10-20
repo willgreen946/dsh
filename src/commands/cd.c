@@ -20,7 +20,7 @@ unsigned int cmd_cd(char *argv[]) {
  }
 
  else if (chdir(argv[1]) == -1) {
-	fprintf(stderr, "%s\n", strerror(errno));
+	fprintf(stderr, "%s:%s\n", argv[1], strerror(errno));
 	return errno;
  }
 
