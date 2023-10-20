@@ -1,11 +1,10 @@
-#include <ctype.h>
 #include <errno.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "commands/commands.h"
 #include "config.h"
 #include "parser.h"
@@ -13,20 +12,16 @@
 
 /* The main loop of the shell */
 static int dsh_event_loop(void) {
-  char buf[256], *argv[256];
+  char *argv[256], *line = NULL, *prompt = NULL;
 
   for (;;) {
-		memset(buf, 0, strlen(buf));
-    config_print_prompt();
+		prompt = config_prompt();
 
-		fflush(stdout);
-
-    if (parser_read_line(buf, 255))
-      fprintf(stderr, "ERROR: taking input\n");
+		if (!(line = readline(prompt))) {} /* Do nothing */
 
     else {
-      parser_rm_newline(buf);
-      parser_line_splitter(argv, buf, 255);
+			add_history(line);
+			parser_line_splitter(argv, line, 255);
 
       if (argv[0])
         return_value = parser_line_parser(argv);
@@ -34,6 +29,9 @@ static int dsh_event_loop(void) {
       /* Reset argv */
       for (size_t i = 0; argv[i]; i++)
         memset(argv[i], 0, strlen(argv[i]));
+
+			free(line);
+			free(prompt);
     }
   }
 
@@ -41,7 +39,12 @@ static int dsh_event_loop(void) {
 }
 
 static int dsh_setup(void) {
+	/* Change $SHELL */
   sys_change_shell();
+
+	/* Enable tab complete */
+	rl_bind_key('\t', rl_complete);
+	using_history();
   dsh_event_loop();
   return 0;
 }

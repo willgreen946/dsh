@@ -6,6 +6,10 @@
 #include "commands/commands.h"
 #include "sys.h"
 
+typedef enum {
+	BACKSPACE = 127,
+}KEY_CODES;
+
 /* Splits up line by whitespace and places them in argv[] */
 void parser_line_splitter(char *argv[], char *str, size_t array_size) {
   char **p_argv;
@@ -23,28 +27,6 @@ void parser_rm_newline(char *buf) {
 
   if ((p_buf = strchr(buf, '\n')))
     *p_buf = (char)0;
-}
-
-/* Read in a string from stdin and check specific keys for actions */
-int parser_read_line(char *buf, size_t len) {
-  char c = (char)0;
-
-  for (size_t i = 0; read(STDIN_FILENO, &c, 1); i++) {
-    if (i > len)
-      break;
-
-		switch(c) {
-			case '\n':
-			/* Fall through */
-			case '\r':
-				return 0;
-			default:
-				*buf++ = c;
-				break;
-		}
-  }
-
-  return 1;
 }
 
 int parser_line_parser(char *argv[]) {

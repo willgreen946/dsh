@@ -16,3 +16,15 @@ void config_print_prompt(void) {
 
   fprintf(stdout, "%s>", working_directory);
 }
+
+char *config_prompt(void) {
+  char *wd = (char*)malloc(256);
+
+  if (!(getcwd(wd, 255))) {
+    fprintf(stderr, "%s\n", strerror(errno));
+    return ">";
+  }
+
+	strncat(wd, ">", 2);
+	return wd;
+}
