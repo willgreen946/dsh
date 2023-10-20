@@ -16,7 +16,10 @@ static int dsh_event_loop(void) {
   char buf[256], *argv[256];
 
   for (;;) {
+		memset(buf, 0, strlen(buf));
     config_print_prompt();
+
+		fflush(stdout);
 
     if (parser_read_line(buf, 255))
       fprintf(stderr, "ERROR: taking input\n");
@@ -31,8 +34,6 @@ static int dsh_event_loop(void) {
       /* Reset argv */
       for (size_t i = 0; argv[i]; i++)
         memset(argv[i], 0, strlen(argv[i]));
-
-      fflush(stdout);
     }
   }
 

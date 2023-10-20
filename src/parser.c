@@ -25,20 +25,23 @@ void parser_rm_newline(char *buf) {
     *p_buf = (char)0;
 }
 
+/* Read in a string from stdin and check specific keys for actions */
 int parser_read_line(char *buf, size_t len) {
-  char c;
-
-  memset(buf, 0, strlen(buf));
+  char c = (char)0;
 
   for (size_t i = 0; read(STDIN_FILENO, &c, 1); i++) {
     if (i > len)
       break;
 
-    else if (c == '\n' || c == '\r')
-      return 0;
-
-    else
-      *buf++ = c;
+		switch(c) {
+			case '\n':
+			/* Fall through */
+			case '\r':
+				return 0;
+			default:
+				*buf++ = c;
+				break;
+		}
   }
 
   return 1;
