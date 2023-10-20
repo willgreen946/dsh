@@ -1,10 +1,13 @@
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "sys.h"
+#include "commands/commands.h"
 
 /* Handles the execution and forks of processes */
 int sys_execute(char *argv[]) {
@@ -28,6 +31,14 @@ int sys_execute(char *argv[]) {
 
     return child_pid;
   }
+}
+
+/* Returns index of command if argv[0] is a shell command */
+ssize_t sys_find_native(char *argv[]) {
+	for (size_t i = 0; command_map[i].str; i++)
+		if (!strncmp(command_map[i].str, argv[0], strlen(command_map[i].str)))
+			return i;
+	return -1;
 }
 
 /* Sets the SHELL enviroment variable */

@@ -48,11 +48,11 @@ int parser_read_line(char *buf, size_t len) {
 }
 
 int parser_line_parser(char *argv[]) {
-  if (!strcmp(argv[0], "cd"))
-    return cmd_cd(argv);
+	int ret = 0;
 
-  else if (!strcmp(argv[0], "exit"))
-    return cmd_exit(argv);
+	/* Check for built in shell commands */
+	if ((ret = sys_find_native(argv)) >= 0)
+		return command_map[ret].function(argv);
 
   return sys_execute(argv);
 }
