@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 
 #include "system.h"
@@ -67,7 +68,13 @@ event_loop(void)
 static int
 dsh_setup(void)
 {
+	/* Setting signal callback */
+	signal(SIGINT, sys_signal_handler);
+
+	/* Set the shell environment variable */
 	sys_set_shell();
+
+	/* Enter into the main loop */
 	return event_loop();
 }
 

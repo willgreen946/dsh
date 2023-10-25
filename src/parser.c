@@ -19,6 +19,13 @@ parse_rm_newline(char * buf)
 		*p_buf = (char)0;
 }
 
+/*
+ * Goes through the argv array evaluating the arguments
+ * This includings, checking for environment variables,
+ * checking for built in commands and pipes (eventually)
+ * Finally, the function will pass argv off to the relevent
+ * function, like sys_execute()
+ */
 int
 parse_line(char ** argv)
 {

@@ -10,6 +10,11 @@
 #include <unistd.h>
 
 /*
+ * Handles signals passed to the program
+ */
+void sys_signal_handler(int);
+
+/*
  * executes a command from the argv array (char **)
  */
 int sys_execute(char **);

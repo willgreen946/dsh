@@ -8,6 +8,15 @@
 
 #include "system.h"
 
+void
+sys_signal_handler(int sig)
+{
+	switch (sig) {
+		default:
+			break;
+	}
+}
+
 /*
  * executes a command from the argv array (char **)
  */
