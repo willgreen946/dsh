@@ -11,12 +11,12 @@ cmd_cd(const char ** argv)
 	/* No arguments */
 	if (!argv[1]) {
 		if (!(home = getenv("HOME"))) {
-			fprintf(stderr, "%s\n", strerror(errno));
+			fprintf(stderr, "cd:%s\n", strerror(errno));
 			return errno;
 		}
 
 		if (chdir(home) == -1) {
-			fprintf(stderr, "%s\n", strerror(errno));
+			fprintf(stderr, "cd:%s\n", strerror(errno));
 			return errno;
 		}
 
@@ -24,7 +24,7 @@ cmd_cd(const char ** argv)
 	}
 
 	else if (chdir(argv[1]) == -1) {
-		fprintf(stderr, "%s\n", strerror(errno));
+		fprintf(stderr, "cd:%s\n", strerror(errno));
 		return errno;
 	}
 
