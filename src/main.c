@@ -21,6 +21,8 @@ read_line(char * buf, size_t memcap)
 			break;
 
 		switch (c) {
+			case EOF:
+			/* Fall through */
 			case '\n':
 			/* Fall through */
 			case '\r':

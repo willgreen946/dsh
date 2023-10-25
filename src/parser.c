@@ -34,10 +34,10 @@ parse_line(char ** argv)
 				strncat(var, &argv[i][k], 1);
 
 			if (!(val = getenv(var)))
-				argv[i] = strndup("NULL", 4);
+				argv[i] = strncpy(argv[i], "NULL", 5);
 
 			else
-				argv[i] = strdup(val);
+				argv[i] = strncpy(argv[i], val, 255);
 
 			memset(var, 0, strlen(var));
 		}
