@@ -8,29 +8,32 @@
 #include "config.h"
 
 /* Reads in a line from stdin */
-/*static int
+static int
 read_line(char * buf, size_t memcap)
 {
 	char c = (char)0;
 	size_t cc;
+
+	memset(buf, 0, strlen(buf));
 
 	for (cc = 0; read(STDIN_FILENO, &c, 1); ++cc) {
 		if (cc >= memcap)
 			break;
 
 		switch (c) {
-			case '\n':*/
+			case '\n':
 			/* Fall through */
-			/*case '\r':
+			case '\r':
+				*buf = (char)0;
 				return 0;
 			default:
 				*buf++ = c;
 				break;
 		}
-	}*/
+	}
 	/* Fail */
-	/*return 1;
-}*/
+	return 1;
+}
 
 static int
 event_loop(void)
@@ -42,8 +45,9 @@ event_loop(void)
 
 	for (;;) {
 		config_print_prompt();
+		fflush(stdout);
 
-		if (fgets(buf, 255, stdin)) {
+		if (!read_line(buf, 255)) {
 			parse_rm_newline(buf);
 			parse_line_splitter((char**)argv, buf, " \t", 128);
 
