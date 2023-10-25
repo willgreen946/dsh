@@ -1,12 +1,18 @@
-#include <stdlib.h>
-#include <limits.h>
+#include "commands.h"
 
-unsigned int cmd_exit(char *argv[]) {
- int ret = 0;
+/*
+ * Exits out of the shell
+ */
+unsigned int
+cmd_exit(const char ** argv)
+{
+	int return_value = 0;
 
- if (!argv[1])
+	if (argv[1]) {
+		return_value = (int)strtol(argv[1], (char**)NULL, 10);
+		exit(return_value);
+	}
+
 	exit(0);
-
- ret = (int)strtol(argv[1], NULL, 10);
- exit(ret);
+	return return_value;
 }

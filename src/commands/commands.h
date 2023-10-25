@@ -1,25 +1,39 @@
 #ifndef __COMMANDS_H__
 #define __COMMANDS_H__
 
-int return_value = 0;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-/* Implementation of the cd command */
-unsigned int cmd_cd(char *argv[]);
-
-/* A command to exit the shell */
-unsigned int cmd_exit(char *argv[]);
-
+/*
+ * The string refers the the command word, like "cd"
+ * The function pointer refers to the function to be called
+ */
 struct COMMAND_MAP {
- const char *str;
- unsigned int(*function)(char *argv[]);
+	const char *str;
+	unsigned int(*fn)(const char **);
 };
 
-struct COMMAND_MAP command_map[] = {
- { "cd", cmd_cd },
- { "exit", cmd_exit },
+/*
+ * Changes the current working directory
+ */
+unsigned int cmd_cd(const char **);
+
+/*
+ *	Exits the shell
+ */
+unsigned int cmd_exit(const char **);
+
+/*
+ * The map of built in shell commands
+ */
+struct COMMAND_MAP cmd_map[] = {
+	{ "cd", cmd_cd },
+	{ "exit", cmd_exit },
 };
 
-#include "exit.c"
 #include "cd.c"
+#include "exit.c"
 
 #endif /* __COMMANDS_H__ */
