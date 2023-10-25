@@ -51,6 +51,7 @@ parse_line(char ** argv)
 	}
 
 	/* Check for built in commands */
+	/* TODO fix bug with first char being valid with strlen */
 	for (i = 0; cmd_map[i].str; i++)
 		if (!strncmp(cmd_map[i].str, argv[0], strlen(argv[0])))
 			return cmd_map[i].fn((const char **)argv);
