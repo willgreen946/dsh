@@ -1,10 +1,13 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-/* Prints the shell prompt to stdout */
-void config_print_prompt(void);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
 
-char *config_prompt(void);
+void config_print_prompt(void);
 
 #include "config.c"
 

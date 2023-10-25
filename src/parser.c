@@ -1,40 +1,63 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <errno.h>
 
 #include "commands/commands.h"
-#include "sys.h"
+#include "system.h"
+#include "parser.h"
 
-typedef enum {
-	BACKSPACE = 127,
-}KEY_CODES;
+/*
+ * Removes newline character(s) from a string
+ */
+void
+parse_rm_newline(char * buf)
+{
+	char *p_buf;
 
-/* Splits up line by whitespace and places them in argv[] */
-void parser_line_splitter(char *argv[], char *str, size_t array_size) {
-  char **p_argv;
-
-  for (p_argv = argv; (*p_argv = strsep(&str, " \t"));) {
-    if (**p_argv)
-      if (++p_argv >= &argv[array_size])
-        break;
-  }
+	if ((p_buf = strchr(buf, '\n')))
+		*p_buf = (char)0;
 }
 
-/* Removes newline chars from a string */
-void parser_rm_newline(char *buf) {
-  char *p_buf;
+int
+parse_line(char ** argv)
+{
+	char var[256];
+	char * val;
+	size_t i;
+	size_t k;
 
-  if ((p_buf = strchr(buf, '\n')))
-    *p_buf = (char)0;
+	/* Check for variables */
+	for (i = 0; argv[i]; i++) {
+		if (argv[i][0] == '$') {
+			for (k = 1; argv[i][k]; k++)
+				strncat(var, &argv[i][k], 1);
+
+			if (!(val = getenv(var)))
+				argv[i] = strndup("NULL", 4);
+
+			else
+				argv[i] = strdup(val);
+
+			memset(var, 0, strlen(var));
+		}
+	}
+
+	/* Check for built in commands */
+	for (i = 0; cmd_map[i].str; i++)
+		if (!strncmp(cmd_map[i].str, argv[0], strlen(argv[0])))
+			return cmd_map[i].fn((const char **)argv);
+
+	return sys_execute(argv);
 }
 
-int parser_line_parser(char *argv[]) {
-	int ret = 0;
+void
+parse_line_splitter(char ** argv, char * str, const char * delim, size_t max) 
+{
+	char ** p_argv;
 
-	/* Check for built in shell commands */
-	if ((ret = sys_find_native(argv)) >= 0)
-		return command_map[ret].function(argv);
-
-  return sys_execute(argv);
+	for (p_argv = argv; (*p_argv = strsep(&str, delim));)
+		if (**p_argv)
+			if (++p_argv >= &argv[max])
+				break;
 }

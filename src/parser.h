@@ -1,24 +1,28 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
-#include "sys.h"
+#include "commands/commands.h"
 
-/* Reads a line of input from stdin */
-int parser_read_line(char *buf, size_t len);
+/*
+ * Removes newlines from a string
+ */
+void parse_rm_newline(char *);
 
-/* Creates context out of argv[] */
-int parser_line_parser(char *argv[]);
+/*
+ * Evaluates the line and sends it off to be executed
+ */
+int parse_line(char **);
 
-/* Splits up line of input by whitespace and places words into argv[] */
-void parser_line_splitter(char *argv[], char *str, size_t array_size);
-
-/* Removes newline chars from a string */
-void parser_rm_newline(char *buf);
+/*
+ * Splits up line by the delim char (const char *)
+ * size_t is used to indicate the maximum elements in (char **)
+ * (char *) is the original string that we want to split up
+ * The splits will be placed in the array (char **)
+ */
+void parse_line_splitter(char **, char *, const char *, size_t);
 
 #include "parser.c"
 
