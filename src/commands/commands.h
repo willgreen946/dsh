@@ -16,6 +16,11 @@ struct COMMAND_MAP {
 };
 
 /*
+ * Clears the screen
+ */
+unsigned int cmd_cls(const char **);
+
+/*
  * Changes the current working directory
  */
 unsigned int cmd_cd(const char **);
@@ -30,9 +35,11 @@ unsigned int cmd_exit(const char **);
  */
 struct COMMAND_MAP cmd_map[] = {
 	{ "cd", cmd_cd },
+	{ "cls", cmd_cls },
 	{ "exit", cmd_exit },
 };
 
+#include "cls.c"
 #include "cd.c"
 #include "exit.c"
 
