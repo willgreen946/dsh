@@ -16,6 +16,11 @@ struct COMMAND_MAP {
 };
 
 /*
+ * Exports environment variable
+ */
+unsigned int cmd_export(const char **);
+
+/*
  * Clears the screen
  */
 unsigned int cmd_cls(const char **);
@@ -36,11 +41,13 @@ unsigned int cmd_exit(const char **);
 struct COMMAND_MAP cmd_map[] = {
 	{ "cd", cmd_cd },
 	{ "cls", cmd_cls },
+	{ "export", cmd_export },
 	{ "exit", cmd_exit },
 };
 
 #include "cls.c"
 #include "cd.c"
+#include "export.c"
 #include "exit.c"
 
 #endif /* __COMMANDS_H__ */
