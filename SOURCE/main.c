@@ -44,7 +44,11 @@ handle_backspace(int pos, int minimum_pos)
 	return pos;
 }
 
-/* Reads in a line from stdin */
+/*
+ * Reads in a line from stdin with unistd read()
+ * Certain chars will invoke different reactions
+ * For example \b will move the cursor back one space
+ */
 static int
 dsh_read_line(char * buf, size_t memcap)
 {
