@@ -7,6 +7,6 @@ cmd_cls(const char ** argv)
 
 	if (!argv) {} /* To silence warnings */
 
-	write(STDOUT_FILENO, CLEAR, 12);
+	write(STDOUT_FILENO, CLEAR, 6);
 	return 0;
 }
