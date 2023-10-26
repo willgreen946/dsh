@@ -52,8 +52,8 @@ handle_backspace(int pos, int minimum_pos)
 static int
 dsh_read_line(char * buf, size_t memcap)
 {
-	int pos = prompt_len;
 	char c = (char)0;
+	int pos = prompt_len;
 	size_t cc;
 
 	memset(buf, 0, strlen(buf));
@@ -99,7 +99,7 @@ dsh_event_loop(void)
 		prompt_len = config_print_prompt();
 		fflush(stdout);
 
-		if (!dsh_read_line(buf, 255)) {
+		if (!dsh_read_line(buf, 1023)) {
 			parse_rm_newline(buf);
 			parse_line_splitter((char**)argv, buf, " \t", 128);
 
