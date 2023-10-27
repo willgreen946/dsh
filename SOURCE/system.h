@@ -22,7 +22,7 @@ int sys_execute(char **);
 /*
  * Sets the shell environment variable
  */
-void sys_set_shell(void);
+void sys_set_shell(const char * shell);
 
 #include "system.c"
 

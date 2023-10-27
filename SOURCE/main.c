@@ -8,6 +8,9 @@
 #include "parser.h"
 #include "config.h"
 
+/* Used to store TERM environment variable */
+static const char * TERM;
+
 static int prompt_len = 0;
 
 /*
@@ -22,7 +25,7 @@ dsh_raw_mode(void)
 	tcgetattr(STDIN_FILENO, &raw);
 
 	/* Setting local flags (on) */
-	raw.c_lflag &= (ECHO | ICRNL | ECHOE);
+	raw.c_lflag &= (ECHO | ICRNL);
 
 	/* Setting local flags (off) */
 	raw.c_lflag &= ~(ICANON);
@@ -38,8 +41,8 @@ static int
 handle_backspace(int pos, int minimum_pos)
 {
 	if (pos > minimum_pos) {
-		write(STDOUT_FILENO, "\b", 1);
-		return --pos;
+		write(STDOUT_FILENO, (char*)0x08, 1);
+		return pos--;
 	}
 	return pos;
 }
@@ -52,9 +55,9 @@ handle_backspace(int pos, int minimum_pos)
 static int
 dsh_read_line(char * buf, size_t memcap)
 {
+	size_t cc;
 	char c = (char)0;
 	int pos = prompt_len;
-	size_t cc;
 
 	memset(buf, 0, strlen(buf));
 
@@ -70,8 +73,8 @@ dsh_read_line(char * buf, size_t memcap)
 			case '\r':
 				*buf = (char)0;
 				return 0;
-			case '\b':
-			/* Fall through */
+			case 0x08:
+				/* Fall through */
 			case 0x7f:
 				pos = handle_backspace(pos, prompt_len);
 				*buf-- = (char)0;
@@ -84,6 +87,7 @@ dsh_read_line(char * buf, size_t memcap)
 		}
 	}
 	/* Fail */
+	write(STDERR_FILENO, "Input Too Long\n", 15);
 	return 1;
 }
 
@@ -123,8 +127,11 @@ dsh_setup(void)
 	/* Enter raw mode */
 	dsh_raw_mode();
 
+	/* Get the TERM evironment variable */
+	TERM = getenv("TERM");
+
 	/* Set the shell environment variable */
-	sys_set_shell();
+	sys_set_shell("DSH");
 
 	/* Enter into the main loop */
 	return dsh_event_loop();

@@ -52,9 +52,9 @@ sys_execute(char ** argv)
  * Sets the shell environment variable
  */
 void
-sys_set_shell(void)
+sys_set_shell(const char * shell)
 {
-	if (setenv("SHELL", "dsh", 1) == -1) {
+	if (setenv("SHELL", shell, 1) == -1) {
 		write(STDERR_FILENO, strerror(errno), strlen(strerror(errno)));
 		write(STDERR_FILENO, "\n", 1);
 	}
