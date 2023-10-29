@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <unistd.h>
 #include <termios.h>
 #include <err.h>
@@ -21,21 +20,39 @@
 /*
  * Takes the terminal out of canonical mode
  * (cooked) and enters into raw mode
+ * look in termios man page for details on,
+ * individual flags
  */
-static void
+static int 
 dsh_raw_mode(void)
 {
 	struct termios raw;
 
-	tcgetattr(STDIN_FILENO, &raw);
+	if (tcgetattr(STDIN_FILENO, &raw) < 0) {
+		err(errno, "dsh_raw_mode");
+		return EXIT_FAILURE;
+	}
 
 	/* Setting local flags (on) */
-	raw.c_lflag &= (ECHO | ICRNL | ECHOE);
+	raw.c_lflag &= (ICRNL 
+		| ECHO | ECHONL | ECHOE | ECHOPRT);
 
 	/* Setting local flags (off) */
-	raw.c_lflag &= ~(ICANON);
+	raw.c_lflag &= ~(ICANON | ECHOCTL | ISIG | IEXTEN);
 
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+	/* Setting output flags (off) */
+	raw.c_oflag &= ~(OXTABS);
+
+	/* 1 byte enough to return from read() */	
+	raw.c_cc[VMIN] = 1;
+	raw.c_cc[VTIME] = 0;
+
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) < 0) {
+		err(errno, "dsh_raw_mode");
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 /*
@@ -43,11 +60,11 @@ dsh_raw_mode(void)
  * Prints backspace if current position is greater than the minimum
  */
 static int
-handle_backspace(int pos, int minimum_pos)
+dsh_backspace(int pos, int minimum_pos)
 {
 	if (pos > minimum_pos) {
-		write(STDOUT_FILENO, (char*)0x7f, 0);
-		return --pos;
+		write(STDOUT_FILENO, (char*)VERASE, 0);
+		return pos - 1;
 	}
 	return pos;
 }
@@ -68,7 +85,6 @@ dsh_read_line(char * buf, size_t memcap)
 	memset(buf, 0, strlen(buf));
 
 	for (cc = 0; (ret = read(STDIN_FILENO, &c, 1)); ++cc) {
-
 		if (ret < 0) {
 			err(errno, "dsh_read_line");
 			return EXIT_FAILURE;
@@ -85,10 +101,14 @@ dsh_read_line(char * buf, size_t memcap)
 			case '\r':
 				*buf = (char)0;
 				return EXIT_SUCCESS;
+			case VERASE:
+			/* Fall through */
+			case VWERASE:
+			/* Fall through */
 			case 0x08:
-				/* Fall through */
+			/* Fall through */
 			case 0x7f:
-				pos = handle_backspace(pos, prompt_len);
+				pos = dsh_backspace(pos, prompt_len);
 				*buf-- = (char)0;
 				break;
 			default:
@@ -114,7 +134,6 @@ dsh_event_loop(void)
 
 	for (;;) {
 		prompt_len = config_print_prompt();
-		fflush(stdout);
 
 		if (!dsh_read_line(buf, 511)) {
 			parse_rm_newline(buf);
@@ -129,17 +148,15 @@ dsh_event_loop(void)
 		}
 	}
 
-	/*return return_value;*/
+	return return_value;
 }
 
 static int
 dsh_setup(void)
 {
-	/* Setting signal callback */
-	signal(SIGINT, sys_signal_handler);
-
 	/* Enter raw mode */
-	dsh_raw_mode();
+	if (dsh_raw_mode())
+		return EXIT_FAILURE;
 
 	/* Set the shell environment variable */
 	sys_set_shell("DSH");

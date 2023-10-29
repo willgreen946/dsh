@@ -1,23 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <err.h>
 #include <unistd.h>
 
 #include "system.h"
-
-void
-sys_signal_handler(int sig)
-{
-	switch (sig) {
-		case SIGINT:
-			return;
-		default:
-			break;
-	}
-}
 
 /*
  * executes a command from the argv array (char **)
@@ -33,7 +21,7 @@ sys_execute(char ** argv)
 	if (!(child_pid = fork())) {
 		return_value = execvp(argv[0], argv);
 		/* FAIL */
-		err(errno, "argv[0]");
+		err(errno, argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
