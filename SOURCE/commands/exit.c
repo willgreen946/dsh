@@ -13,6 +13,6 @@ cmd_exit(const char ** argv)
 		exit(return_value);
 	}
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 	return return_value;
 }

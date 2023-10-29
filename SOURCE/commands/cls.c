@@ -8,5 +8,5 @@ cmd_cls(const char ** argv)
 	if (!argv) {} /* To silence warnings */
 
 	write(STDOUT_FILENO, CLEAR, strlen(CLEAR));
-	return 0;
+	return EXIT_SUCCESS;
 }

@@ -14,10 +14,9 @@ cmd_export(const char ** argv)
 	}
 
 	if (setenv(argv[1], argv[2], 1)) {
-		write(STDERR_FILENO, strerror(errno), strlen(strerror(errno)));
-		write(STDERR_FILENO, "\n", 1);
-		return errno;
+		err(errno, "export");
+		return EXIT_FAILURE;
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
