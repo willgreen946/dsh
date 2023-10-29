@@ -1,5 +1,5 @@
 # About DSH
-DSH is a shell for UNIX and Linux systems, written in C89 for fun, it's IO uses unistd write() and read() and termios raw mode stuff
+DSH is a shell for UNIX and Linux systems, written in C89 for fun, it's IO uses unistd write(), err() and read() and termios raw mode stuff
 Right now, I am not aiming for POSIX compliance, as this is just for fun.
 
 # Things to add
