@@ -25,7 +25,7 @@ sys_signal_handler(int sig)
 int
 sys_execute(char ** argv)
 {
-	int return_value;
+	int return_value = 0;
 	int child_status;
 	pid_t child_pid;
 	pid_t t_pid;
