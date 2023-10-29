@@ -30,7 +30,7 @@ dsh_raw_mode(void)
 	tcgetattr(STDIN_FILENO, &raw);
 
 	/* Setting local flags (on) */
-	raw.c_lflag &= (ECHO | ICRNL);
+	raw.c_lflag &= (ECHO | ICRNL | ECHOE);
 
 	/* Setting local flags (off) */
 	raw.c_lflag &= ~(ICANON);
@@ -46,7 +46,7 @@ static int
 handle_backspace(int pos, int minimum_pos)
 {
 	if (pos > minimum_pos) {
-		write(STDOUT_FILENO, (char*)0x7f, 1);
+		write(STDOUT_FILENO, (char*)0x7f, 0);
 		return --pos;
 	}
 	return pos;
@@ -129,7 +129,7 @@ dsh_event_loop(void)
 		}
 	}
 
-	return return_value;
+	/*return return_value;*/
 }
 
 static int
