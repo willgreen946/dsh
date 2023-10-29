@@ -9,7 +9,7 @@ cmd_export(const char ** argv)
 		;
 
 	if (i != 3) {
-		write(STDERR_FILENO, "Export requires two arguments\n", 32);
+		err(EXIT_FAILURE, "requires two arguments\n");
 		return 1;
 	}
 
