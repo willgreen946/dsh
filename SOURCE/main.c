@@ -1,17 +1,22 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
 #include <termios.h>
+#include <err.h>
 
 #include "system.h"
 #include "parser.h"
 #include "config.h"
 
-/* Used to store TERM environment variable */
-static const char * TERM;
+#ifndef EXIT_FAILURE
+	#define EXIT_FAILURE 1
+#endif /* EXIT_FAILURE */
 
-static int prompt_len = 0;
+#ifndef EXIT_SUCCESS
+	#define EXIT_SUCCESS 0
+#endif /* EXIT_SUCCESS */
 
 /*
  * Takes the terminal out of canonical mode
@@ -41,8 +46,8 @@ static int
 handle_backspace(int pos, int minimum_pos)
 {
 	if (pos > minimum_pos) {
-		write(STDOUT_FILENO, (char*)0x08, 1);
-		return pos--;
+		write(STDOUT_FILENO, (char*)0x7f, 1);
+		return --pos;
 	}
 	return pos;
 }
@@ -56,12 +61,19 @@ static int
 dsh_read_line(char * buf, size_t memcap)
 {
 	size_t cc;
+	ssize_t ret;
 	char c = (char)0;
 	int pos = prompt_len;
 
 	memset(buf, 0, strlen(buf));
 
-	for (cc = 0; read(STDIN_FILENO, &c, 1); ++cc) {
+	for (cc = 0; (ret = read(STDIN_FILENO, &c, 1)); ++cc) {
+
+		if (ret < 0) {
+			err(errno, "dsh_read_line");
+			return EXIT_FAILURE;
+		}
+
 		if (cc >= memcap)
 			break;
 
@@ -72,7 +84,7 @@ dsh_read_line(char * buf, size_t memcap)
 			/* Fall through */
 			case '\r':
 				*buf = (char)0;
-				return 0;
+				return EXIT_SUCCESS;
 			case 0x08:
 				/* Fall through */
 			case 0x7f:
@@ -86,9 +98,10 @@ dsh_read_line(char * buf, size_t memcap)
 				break;
 		}
 	}
+
 	/* Fail */
-	write(STDERR_FILENO, "Input Too Long\n", 15);
-	return 1;
+	err(EXIT_FAILURE, "Input too long");
+	return EXIT_FAILURE;
 }
 
 static int
@@ -96,14 +109,14 @@ dsh_event_loop(void)
 {
 	int return_value;
 	char * argv[128];
-	char buf[1024];
+	char buf[512];
 	size_t i;
 
 	for (;;) {
 		prompt_len = config_print_prompt();
 		fflush(stdout);
 
-		if (!dsh_read_line(buf, 1023)) {
+		if (!dsh_read_line(buf, 511)) {
 			parse_rm_newline(buf);
 			parse_line_splitter((char**)argv, buf, " \t", 128);
 
@@ -115,6 +128,7 @@ dsh_event_loop(void)
 				memset(argv[i], 0, strlen(argv[i]));
 		}
 	}
+
 	return return_value;
 }
 
@@ -126,9 +140,6 @@ dsh_setup(void)
 
 	/* Enter raw mode */
 	dsh_raw_mode();
-
-	/* Get the TERM evironment variable */
-	TERM = getenv("TERM");
 
 	/* Set the shell environment variable */
 	sys_set_shell("DSH");
@@ -142,7 +153,7 @@ dsh_parse_args(const char ** argv)
 {
 	if (!argv)
 		{}
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int

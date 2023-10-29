@@ -1,13 +1,21 @@
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <err.h>
 #include <unistd.h>
+
+#ifndef EXIT_FAILURE
+	#define EXIT_FAILURE 1
+#endif /* EXIT_FAILURE */
+
+#ifndef EXIT_SUCCESS
+	#define EXIT_SUCCESS 0
+#endif /* EXIT_SUCCESS */
 
 /*
  * Handles signals passed to the program

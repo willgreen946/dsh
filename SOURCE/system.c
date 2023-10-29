@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <err.h>
 #include <unistd.h>
 
 #include "system.h"
@@ -24,16 +25,16 @@ sys_signal_handler(int sig)
 int
 sys_execute(char ** argv)
 {
+	int return_value;
 	int child_status;
 	pid_t child_pid;
 	pid_t t_pid;
 
 	if (!(child_pid = fork())) {
-		execvp(argv[0], argv);
+		return_value = execvp(argv[0], argv);
 		/* FAIL */
-		write(STDERR_FILENO, argv[0], strlen(argv[0]));
-		write(STDERR_FILENO, ":Unkown Command\n", 16);
-		exit(1);
+		err(errno, "argv[0]");
+		exit(EXIT_FAILURE);
 	}
 
 	else {
@@ -44,7 +45,7 @@ sys_execute(char ** argv)
 				kill(t_pid, SIGTERM);
 		} while (t_pid != child_pid);
 
-		return child_pid;
+		return return_value;
 	}
 }
 
@@ -54,8 +55,6 @@ sys_execute(char ** argv)
 void
 sys_set_shell(const char * shell)
 {
-	if (setenv("SHELL", shell, 1) == -1) {
-		write(STDERR_FILENO, strerror(errno), strlen(strerror(errno)));
-		write(STDERR_FILENO, "\n", 1);
-	}
+	if (setenv("SHELL", shell, 1) == -1)
+		err(errno, "sys_set_shell");
 }

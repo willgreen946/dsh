@@ -18,6 +18,18 @@ parse_rm_newline(char * buf)
 		*p_buf = (char)0;
 }
 
+ssize_t
+parse_is_built_in(const char * str, const size_t max)
+{
+	size_t i;
+
+	for (i = 0;  i < CMD_MAX; i++)
+		if (!strncmp(str, cmd_map[i].str, max))
+			return i;
+
+	return -1;
+}
+
 /*
  * Goes through the argv array evaluating the arguments
  * This includings, checking for environment variables,
@@ -49,11 +61,16 @@ parse_line(char ** argv)
 		}
 	}
 
+	if (!strncmp(argv[0], "cd", 2))
+		return cmd_cd((const char **)argv);
+
+	if (!strncmp(argv[0], "exit", 4))
+		return cmd_exit((const char **)argv);
+
 	/* Check for built in commands */
-	/* TODO fix bug with first char being valid with strlen */
-	for (i = 0; cmd_map[i].str; i++)
-		if (!strncmp(cmd_map[i].str, argv[0], strlen(argv[0])))
-			return cmd_map[i].fn((const char **)argv);
+	// TODO fix
+	/*if ((i = parse_is_built_in(argv[0], 255)) > 0)
+		return cmd_map[i].fn((const char **)argv);*/
 
 	return sys_execute(argv);
 }

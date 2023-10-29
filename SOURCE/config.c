@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <err.h>
 
 #include "config.h"
 
@@ -11,8 +12,7 @@ config_print_prompt(void)
 	char wd[256];
 
 	if (!(getcwd(wd, 255))) {
-		write(STDERR_FILENO, strerror(errno), strlen(strerror(errno)));
-		write(STDERR_FILENO, "\n", 1);
+		err(errno, "config_print_prompt");
 		write(STDOUT_FILENO, ">", 1);
 		return 1;
 	}
