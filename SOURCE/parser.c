@@ -68,7 +68,7 @@ parse_line(char ** argv)
 		return cmd_exit((const char **)argv);
 
 	/* Check for built in commands */
-	// TODO fix
+	/* TODO fix */
 	/*if ((i = parse_is_built_in(argv[0], 255)) > 0)
 		return cmd_map[i].fn((const char **)argv);*/
 
